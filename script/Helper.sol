@@ -28,24 +28,20 @@ contract Helper is Test {
         // remove curly braces
         string memory fir = json.replace("{", "");
         string memory sr = fir.replace("}", "");
-        string memory tr = sr.replace("\n", "");
+        string[] memory result = sr.split("\n");
+        functionSelectors = new bytes4[](result.length - 2);
 
-        string[] memory result = tr.split(",");
-
-        functionSelectors = new bytes4[](result.length);
-
-        for (uint256 i = 0; i < result.length; i++) {
+        for (uint256 i = 1; i < result.length - 1; i++) {
             string[] memory item = result[i].split(":");
 
             string memory parsedSignatures = item[0];
             bytes memory signatureBytes = bytes(parsedSignatures);
-
             bytes memory sigres = signatureBytes.slice(3, (signatureBytes.length -3));
             bytes memory fnSignature = sigres.slice(0, (sigres.length - 1));
 
             bytes4 selector = bytes4(keccak256(fnSignature));
 
-            functionSelectors[i] = selector;
+            functionSelectors[i - 1] = selector;
             console.logBytes4(selector);
         }
     }
